@@ -1,0 +1,71 @@
+<div class="container">
+  <form [formGroup]="form">
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <h1>{{ editando ? 'Edição de' : 'Novo' }} Cliente</h1>
+      </div>
+      <div class="ui-g-12 ui-md-8 ui-fluid">
+        <label>Nome</label>
+        <input id="nome" type="text" pInputText formControlName="nome" #nome>
+      </div>
+      <div class="ui-g-12 ui-md-4 ui-fluid">
+        <label>CPF</label>
+        <input id="cpf" type="text" size="30" pInputText formControlName="cpf" mascara="999.999.999-99" >
+      </div>
+      <!-- TELEFONE -->
+        <div class="ui-g-6 ui-md-4 ui-fluid">
+          <label>Tipo contato</label>
+          <p-dropdown [options]="tiposTelefone" formControlName="tipoTelefone"
+            placeholder="Escolha o tipo" optionLabel="name" (onChange)="tipoTelefoneSelecionado()" [showClear]="true">
+          </p-dropdown>
+        </div>
+        <div class="ui-g-6 ui-md-4 ui-fluid">
+          <label>telefone</label>
+          <input id="telefone" pInputText formControlName="telefone" mascara="{{mascaraParaTelefone}}">
+      </div>
+      <!-- E-mail -->
+      <div class="ui-g-12 ui-md-4 ui-fluid">
+        <label>Email</label>
+        <input id="email" type="text" size="30" pInputText formControlName="email" email [(ngModel)]="email">
+      </div>
+      <!-- Endereco -->
+      <div class="ui-g-12 ui-md-2 ui-fluid">
+        <label>CEP</label>
+        <input id="cep" type="text" size="30" pInputText formControlName="cep" mascara="99.999-999" (blur)="consultarCEP()"
+          (focus)="limparCamposEndereco()">
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-fluid">
+        <label>Logradouro</label>
+        <input id="logradouro" type="text" pInputText formControlName="logradouro" readonly
+          [(ngModel)]="logradouro">
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-fluid">
+        <label>Complemento</label>
+        <input id="complemento" type="text" size="30" pInputText formControlName="complemento"
+          [disabled]="mostrarCampoComplemento" #complemento>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-fluid">
+        <label>Bairro</label>
+        <input id="bairro" type="text" size="30" pInputText formControlName="bairro" readonly
+          [(ngModel)]="bairro">
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+        <label>Cidade</label>
+        <input id="localidade" type="text" size="30" pInputText formControlName="localidade" readonly
+          [(ngModel)]="localidade">
+      </div>
+      <div class="ui-g-12 ui-md-1 ui-fluid">
+        <label>UF</label>
+        <input id="uf" type="text" size="2" pInputText formControlName="uf" readonly [(ngModel)]="uf">
+      </div>
+
+      <div class="ui-g-12">
+        <button pButton type="button" type="submit" icon="pi pi-save" label="Salvar" class="ui-button-info"
+          style="margin-right: .25em" (click)="salvar()"></button>
+        <button pButton type="button" icon="pi pi-arrow-left" label="Voltar" class="ui-button-success"
+          [routerLink]="['/clientes']"></button>
+      </div>
+    </div>
+  </form>
+</div>
+

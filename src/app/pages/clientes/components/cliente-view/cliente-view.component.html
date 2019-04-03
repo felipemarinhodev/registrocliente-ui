@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="ui-g">
+    <div class="ui-g-12 ui-md-11">
+      <h1>Informações do Cliente</h1>
+    </div>
+    <div class="ui-g-12 ui-md-1 ui-fluid">
+      <button pButton type="button" icon="pi pi-arrow-left" label="Voltar" class="ui-button-success"
+        [routerLink]="['/clientes']"></button>
+    </div>
+    <div class="ui-g-12 ui-md-12">
+      <p-panel>
+        <p-header>
+            <div class="ui-helper-clearfix">
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Dados Pessoais</span>
+              <button pButton style="margin-top:2px; float: right;" *ngIf="podeMostrar('ROLE_ADMIN')" pTooltip="Editar" icon="pi pi-pencil" ></button>
+            </div>
+        </p-header>
+        <div class="row" style=" margin-left: 10px;">
+          <strong>Nome: </strong><label>{{cliente.nome}}</label>
+        </div>
+        <div class="row" style=" margin-left: 10px;">
+          <strong>CPF: </strong><label>{{cliente.cpf | cpf}}</label>
+        </div>
+      </p-panel>
+      <p-panel>
+        <p-header>
+            <div class="ui-helper-clearfix">
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Endereço</span>
+              <button pButton style="margin-top:2px; float: right;" pTooltip="Editar" icon="pi pi-pencil" *ngIf="podeMostrar('ROLE_ADMIN')"></button>
+            </div>
+        </p-header>
+          <div class="row" style=" margin-left: 10px;">
+            <strong>Logradouro: </strong><label>{{cliente.endereco.logradouro}}</label>
+          </div>
+          <div class="row" style=" margin-left: 10px;">
+            <strong>Bairro: </strong><label>{{cliente.endereco.bairro}}</label>
+          </div>
+          <div class="row" style=" margin-left: 10px;">
+              <strong>CEP: </strong><label>{{cliente.endereco.cep}}</label>
+            </div>
+          <div class="row" style=" margin-left: 10px;">
+            <strong>Cidade/UF: </strong><label>{{cliente.endereco.cidade}} - {{cliente.endereco.uf}}</label>
+          </div>
+      </p-panel>
+
+      <!-- Telefone -->
+      <p-panel>
+        <p-header>
+            <div class="ui-helper-clearfix">
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Dados Telefonicos</span>
+              <button pButton style="margin-top:2px; float: right;" pTooltip="Editar" *ngIf="podeMostrar('ROLE_ADMIN')" icon="pi pi-pencil" ></button>
+            </div>
+        </p-header>
+        <div class="row" style=" margin-left: 10px;" *ngFor="let telefone of cliente.telefones">
+          <strong>{{telefone.tipoTelefone}}: </strong><label> {{telefone.telefone | telefone}}</label>
+        </div>
+      </p-panel>
+
+      <!-- E-mail -->
+      <p-panel>
+        <p-header>
+            <div class="ui-helper-clearfix">
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Dados Eletrônicos</span>
+              <button pButton style="margin-top:2px; float: right;" *ngIf="podeMostrar('ROLE_ADMIN')" pTooltip="Editar" icon="pi pi-pencil" ></button>
+            </div>
+        </p-header>
+        <div class="row" style=" margin-left: 10px;" *ngFor="let email of cliente.mails">
+          <strong>E-mail: </strong><label>{{email.email}}</label>
+        </div>
+      </p-panel>
+    </div>
+  </div>
+</div>

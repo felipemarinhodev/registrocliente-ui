@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="ui-g">
+    <div class="ui-g-12 ui-md-12">
+      <h1>Clientes</h1>
+      <button pButton type="button" label="Adicionar Cliente" *ngIf="podeMostrar('ROLE_ADMIN')" [routerLink]="['/clientes/new']"
+        style="margin: 10px;"></button>
+      <p-table class="table table-hover" [value]="clientes" [rows]="10" [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]" #tabela>
+        <ng-template pTemplate="header">
+          <tr class="bg-dark text-light">
+            <th class="col-person_header bg-dark text-light">Nome</th>
+            <th class="col-clients_header bg-dark text-light">CPF</th>
+            <th class="col-clients_header bg-dark text-light">Ações</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-cliente>
+          <tr>
+            <td class="col-person_name">
+              <strong>{{ cliente.nome }}</strong>
+            </td>
+            <td class="col-clients">{{ cliente.cpf | cpf }}</td>
+            <td class="col-actions">
+              <button [routerLink]="[cliente.id]" class="ui-button-success mr-1" icon="pi pi-eye" pButton
+                pTooltip="Detalhar" tooltipPosition="top" type="button"></button>
+              <button [routerLink]="[cliente.id, 'edit']" class="ui-button-info mr-1" icon="pi pi-pencil" pButton
+              *ngIf="podeMostrar('ROLE_ADMIN')" pTooltip="Editar" tooltipPosition="top" type="button"></button>
+              <button (click)="confirmarExclusao(cliente)" icon="pi pi-trash" class="ui-button-danger" pButton
+              *ngIf="podeMostrar('ROLE_ADMIN')" pTooltip="Excluir" tooltipPosition="top"></button>
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="container">
+  <form [formGroup]="form">
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <p-panel>
+          <p-header>
+            <div class="ui-helper-clearfix">
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Autenticar
+                Usuário</span>
+            </div>
+          </p-header>
+          <div class="row" style=" margin-left: 10px;">
+            <label><strong>Usuário</strong></label>
+            <input id="usuario" type="text" style="margin-left: 10px;" pInputText formControlName="usuario">
+          </div>
+          <br>
+            <div class="row" style=" margin-left: 10px;">
+            <label><strong>Senha</strong></label>
+            <input id="senha" type="password" [feedback]="false" style="margin-left: 19px;" pPassword formControlName="senha">
+          </div>
+          <p-footer>
+            <button pButton type="submit" label="Logar" class="ui-button-info" style="margin-right: .25em" (click)="logar()"></button>
+          </p-footer>
+        </p-panel>
+      </div>
+    </div>
+  </form>
+
+</div>
