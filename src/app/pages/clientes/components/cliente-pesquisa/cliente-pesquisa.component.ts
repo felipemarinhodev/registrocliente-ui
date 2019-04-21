@@ -29,41 +29,33 @@ export class ClientePesquisaComponent implements OnInit {
   buscarClientes() {
     this.clienteService.buscarTodos(0, 20).subscribe(
       data => {
-        console.log(`Mostrar resultado da busca: ${JSON.stringify(data)}`);
         this.clientes = data['data']['content'];
       }
     );
   }
 
-  confirmarExclusao(cliente: any) {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir?',
-      header: 'Confirmação de exclusão',
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.excluir(cliente);
-      },
-      reject: () => {
-        // this.toastyService.warning();
-      }
-    });
+  confirmarExclusao(cliente: Cliente) {
+    const texto = confirm(`Deseja remover o cliente: ${cliente.nome}`);
+
+    if (texto) {
+      this.excluir(cliente);
+    }
+
   }
 
-  excluir(cliente: any) {
-    console.log('Excluir o registro');
-
-    // TODO: Chamar a exclusão
-    // this.pessoaService.excluir(pessoa.codigo)
-    //   .then(() => {
-    //     if (this.grid.first === 0) {
-    //       this.pesquisar();
-    //     } else {
-    //       this.grid.first = 0;
-    //     }
-
-    //     this.toasty.success('Pesssoa excluída com sucesso!');
-    //   })
-    //   .catch(erro => this.errorHandler.handle(erro));
+  excluir(cliente: Cliente) {
+    this.clienteService.remover(cliente.id)
+      .subscribe(
+        () => {
+          if (this.grid.first === 0) {
+            this.buscarClientes();
+          } else {
+            this.grid.first = 0;
+          }
+        }, err => {
+          console.log(`Deu erro: ${err}`);
+        }
+      );
   }
 
   podeMostrar(perfil: string): boolean {

@@ -1,8 +1,8 @@
 import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, AfterContentChecked } from '@angular/core';
 
 import { Mail } from './../../models/mail.model';
 import { Cliente } from './../../models/cliente.model';
@@ -11,22 +11,13 @@ import { Endereco } from '../../models/endereco.model';
 import { CpfValidators } from './../../../../shared/validators/cpf.validator';
 import { ClienteService } from '../../services/cliente.service';
 
+enum Operacao {
+  VISUALIZAR, EDITAR, ADICIONAR
+}
+
 interface TipoTelefone {
   name: string;
   code: string;
-}
-
-interface ClienteVO {
-  nome: string;
-  cpf: string;
-  telefone: string;
-  tipoTelefone: TipoTelefone;
-  email: string;
-  logradouro: string;
-  cep: string;
-  cidade: string;
-  bairro: string;
-  uf: string;
 }
 
 @Component({
@@ -35,19 +26,14 @@ interface ClienteVO {
   styleUrls: ['./cliente-form.component.css']
 })
 
-export class ClienteFormComponent implements OnInit {
+export class ClienteFormComponent implements OnInit, AfterContentChecked {
 
   form: FormGroup;
-  clientevo: ClienteVO;
   tiposTelefone: TipoTelefone[];
   tipoSelecionado: TipoTelefone;
 
   cliente: Cliente;
 
-
-
-  // nome: string;
-  // cpf: string;
   logradouro: string;
   complemento: string;
   bairro: string;
@@ -59,9 +45,10 @@ export class ClienteFormComponent implements OnInit {
   habilitaTelefone = true;
   telefone: string;
   email: string;
+  cabecalho: string;
+  telefones: Telefone[];
 
-
-
+  acaoCorrente: Operacao;
 
   constructor(
     private titulo: Title,
@@ -83,45 +70,51 @@ export class ClienteFormComponent implements OnInit {
 
     if (idCliente) {
       this.carregarCliente(idCliente);
-      this.atualizarTituloEdicao();
     }
     this.gerarForm();
+    this.acaoCorrente = this.getDefineOperation();
+  }
+
+  ngAfterContentChecked(): void {
+    this.definirTituloDaPagina();
+  }
+
+  private getDefineOperation(): Operacao {
+    if (this.route.snapshot.url[1].path === 'new') {
+      return Operacao.ADICIONAR;
+    // tslint:disable-next-line:triple-equals
+    } else if (this.route.snapshot.url[2] != undefined && this.route.snapshot.url[2].path === 'edit') {
+      return Operacao.EDITAR;
+    } else {
+      return Operacao.VISUALIZAR;
+    }
   }
 
   get editando() {
     return Boolean(this.route.snapshot.params['id']);
   }
 
-  atualizarTituloEdicao() {
-    // TODO: Quando buscar o cliente colocar para mostrar as informações dele aqui!
-    // if (this.cliente.nome) {
-    //   this.titulo.setTitle(`Edição de cliente: ${this.cliente.nome}`);
-    // } else {
-      this.titulo.setTitle('Novo de cliente');
-    // }
-  }
   carregarCliente(id: string) {
-    // TODO: Buscar o cliente pelo id
     this.clienteService.buscarPorId(id)
     .subscribe(cliente => {
-      console.log(JSON.stringify(cliente['data']));
       this.cliente = cliente['data'];
-        this.form.setValue({
-          nome: cliente['data']['nome'],
-          cpf: cliente['data']['cpf'],
-          telefone: cliente['data']['telefones'][0]['telefone'],
-          tipoTelefone: cliente['data']['telefones'][0]['tipoTelefone'],
-          logradouro: this.cliente.endereco.logradouro,
-          complemento: '',
-          bairro: this.cliente.endereco.bairro,
-          localidade: this.cliente.endereco.cidade,
-          uf: this.cliente.endereco.uf,
-          cep: this.cliente.endereco.cep,
-          email: this.cliente.mails[0].email
+      this.telefones = this.cliente.telefones;
+      this.form = this.fb.group({
+        nome: cliente['data']['nome'],
+        cpf: cliente['data']['cpf'],
+        telefone: this.cliente.telefones[0].telefone,
+        tipoTelefone: this.cliente.telefones[0].tipoTelefone,
+        telefones: this.cliente.telefones,
+        logradouro: this.cliente.endereco.logradouro,
+        complemento: '',
+        bairro: this.cliente.endereco.bairro,
+        localidade: this.cliente.endereco.cidade,
+        uf: this.cliente.endereco.uf,
+        cep: this.cliente.endereco.cep,
+        email: this.cliente.mails[0].email
 
-        });
       });
-      // .catch( erro => this.erroHandler.handle(erro));
+    });
   }
 
   gerarForm() {
@@ -130,6 +123,7 @@ export class ClienteFormComponent implements OnInit {
       cpf: ['', [Validators.required, CpfValidators]],
       tipoTelefone: ['', [Validators.required]],
       telefone: ['', [Validators.required]],
+      telefones: [''],
       logradouro: ['', [Validators.required]],
       complemento: ['', ],
       bairro: ['', [Validators.required]],
@@ -149,20 +143,14 @@ export class ClienteFormComponent implements OnInit {
   }
 
   atualizar() {
-    console.log(JSON.stringify(this.form.value));
     const cli = this.popularClienteParaEdicao(this.form.value, this.cliente);
     this.clienteService.atualizar(cli).subscribe(
       data => {
-        console.log(`Cliente salvo com sucesso!`);
         this.router.navigate(['/clientes']);
       },
       err => {
         const msg = err.error.errors.join(' ');
-        console.log(`Erro ao tentar persistir: ${msg}`);
-
-      }
-    );
-    console.log(`Cliente pronto para persistir; ${JSON.stringify(cli)}`);
+      });
 
     if (this.form.invalid) {
       return;
@@ -181,20 +169,14 @@ export class ClienteFormComponent implements OnInit {
       return;
     }
 
-    console.log(JSON.stringify(this.form.value));
     const cli = this.popularCliente(this.form.value);
     this.clienteService.adicionar(cli).subscribe(
       data => {
-        console.log(`Cliente salvo com sucesso!`);
         this.router.navigate(['/clientes']);
       },
       err => {
         const msg = err.error.errors.join(' ');
-        console.log(`Erro ao tentar persistir: ${msg}`);
-
-      }
-    );
-    console.log(`Cliente pronto para persistir; ${JSON.stringify(cli)}`);
+      });
   }
 
   popularCliente(data: any): Cliente {
@@ -220,12 +202,6 @@ export class ClienteFormComponent implements OnInit {
   }
 
   limparCamposEndereco() {
-    this.localidade = '';
-    this.logradouro = '';
-    this.uf = '';
-    this.bairro = '';
-    this.complemento = '';
-
     this.mostrarCampoComplemento = true;
   }
 
@@ -237,8 +213,29 @@ export class ClienteFormComponent implements OnInit {
         this.mascaraParaTelefone = '(99) 99999-9999';
       } else {
         this.mascaraParaTelefone = '(99) 9999-9999';
-
       }
     }
   }
+
+  isOperacaoVisualizar(): Boolean {
+    return this.acaoCorrente === Operacao.VISUALIZAR;
+  }
+
+  private definirTituloDaPagina() {
+    switch (this.acaoCorrente) {
+      case Operacao.ADICIONAR: {
+        this.cabecalho = 'Novo Cliente';
+        break;
+      }
+      case Operacao.EDITAR: {
+        this.cabecalho = 'Edição de cliente';
+        break;
+      }
+      default : {
+        this.cabecalho = 'Visualizar cliente';
+        break;
+      }
+    }
+  }
+
 }

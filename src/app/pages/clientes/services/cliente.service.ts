@@ -20,10 +20,8 @@ export class ClienteService {
 
   getHeader(): HttpHeaders {
     let httpHeaders = new HttpHeaders();
-    httpHeaders = httpHeaders.set(
-      // 'Authorization', localStorage.getItem('token')
-      'Authorization', env.TOKEN
-    );
+    const token = localStorage['token'];
+    httpHeaders = httpHeaders.set('Authorization', token);
     return httpHeaders;
   }
 
@@ -43,8 +41,8 @@ export class ClienteService {
     return this.http.get(env.URL_PATH + this.CAMINHO_SERVICO + `/${id}`, {headers: this.getHeader() });
   }
 
-  remover(id: string) {
-    return this.http.delete(env.URL_PATH + this.CAMINHO_SERVICO + `/${id}`);
+  remover(id: string): Observable<any> {
+    return this.http.delete(env.URL_PATH + this.CAMINHO_SERVICO + `/${id}`, {headers: this.getHeader() });
   }
 
   buscarDadosCEP(cep: string): Observable<any> {

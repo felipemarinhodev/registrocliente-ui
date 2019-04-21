@@ -24,7 +24,7 @@ const routes: Routes = [
   },
   {
     path: 'clientes/:id',
-    component: ClienteViewComponent,
+    component: ClienteFormComponent,
     canActivate: [AuthGuard]
   }
 ];
