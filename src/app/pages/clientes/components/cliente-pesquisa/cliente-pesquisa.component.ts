@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ClienteService } from '../../services/cliente.service';
-import { Cliente } from '../../models/cliente.model';
 
-import { ConfirmationService } from 'primeng/api';
+import { Cliente } from '../../models/cliente.model';
+import { ClienteService } from '../../services/cliente.service';
+
+import toastr from 'toastr';
 
 @Component({
   selector: 'app-cliente-pesquisa',
   templateUrl: './cliente-pesquisa.component.html',
   styleUrls: ['./cliente-pesquisa.component.css'],
-  providers: [ConfirmationService]
 })
 export class ClientePesquisaComponent implements OnInit {
 
@@ -18,7 +18,6 @@ export class ClientePesquisaComponent implements OnInit {
 
   constructor(
     private clienteService: ClienteService,
-    private confirmationService: ConfirmationService,
   ) { }
 
   ngOnInit() {
@@ -52,7 +51,9 @@ export class ClientePesquisaComponent implements OnInit {
           } else {
             this.grid.first = 0;
           }
+          toastr.success('Cliente excluído com sucesso!');
         }, err => {
+          toastr.error('Ocorreu um erro ao processar a sua solicitação');
           console.log(`Deu erro: ${err}`);
         }
       );

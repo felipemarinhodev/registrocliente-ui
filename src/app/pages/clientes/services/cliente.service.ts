@@ -2,21 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Cliente } from '../models/cliente.model';
-import { environment as env } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { environment as env } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
 
-
   CAMINHO_SERVICO = 'cliente';
 
   constructor(
     private http: HttpClient
   ) { }
-
 
   getHeader(): HttpHeaders {
     let httpHeaders = new HttpHeaders();

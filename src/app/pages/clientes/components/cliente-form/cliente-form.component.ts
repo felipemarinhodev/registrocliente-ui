@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, AfterContentChecked } from '@angular/core';
 
+import toastr from 'toastr';
 import { Mail } from './../../models/mail.model';
 import { Cliente } from './../../models/cliente.model';
 import { Telefone } from '../../models/telefone.model';
@@ -146,9 +147,11 @@ export class ClienteFormComponent implements OnInit, AfterContentChecked {
     const cli = this.popularClienteParaEdicao(this.form.value, this.cliente);
     this.clienteService.atualizar(cli).subscribe(
       data => {
+        toastr.success('Cliente alterado com sucesso!');
         this.router.navigate(['/clientes']);
       },
       err => {
+        toastr.error('Ocorreu um erro ao processar a sua solicitação');
         const msg = err.error.errors.join(' ');
       });
 
@@ -172,9 +175,11 @@ export class ClienteFormComponent implements OnInit, AfterContentChecked {
     const cli = this.popularCliente(this.form.value);
     this.clienteService.adicionar(cli).subscribe(
       data => {
+        toastr.success('Cliente cadastrado com sucesso!');
         this.router.navigate(['/clientes']);
       },
       err => {
+        toastr.error('Ocorreu um erro ao processar a sua solicitação');
         const msg = err.error.errors.join(' ');
       });
   }
